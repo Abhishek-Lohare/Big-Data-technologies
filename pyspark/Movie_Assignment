@@ -1,0 +1,11 @@
+rdd1 = sc.textFile("/home/dbda/Downloads/u.data")
+rdd2 = rdd1.map(lambda x:x.split("\t"))
+df = rdd2.toDF()
+df.show()
+df.createTempView("data")
+spark.sql("select _1 as cust_id,_2 as movie_id,_3 as rating,_4 as ticket_id from data").createTempView("new_data")
+new_data.show()
+spark.sql("select avg(rating) from new_data").show() = 3.52
+spark.sql("select movie_id  from new_data where rating > 3.52 group by movie_id ").count()
+spark.sql("select movie_id from new_data where rating > (select avg(rating) from new_data) group by movie_id").count()
+

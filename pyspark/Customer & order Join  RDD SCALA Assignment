@@ -1,0 +1,87 @@
+val cust = sc.textFile("/home/abhishek/Downloads/DataSets-20230106T120730Z-001/DataSets/customers/")
+val ord = sc.textFile("/home/abhishek/Downloads/DataSets-20230106T120730Z-001/DataSets/orders/")
+val ordmap =ord.map(x => x.split(","))
+val custmap =cust.map(x => x.split(","))
+=======================================================================================================
+val ord2013 = ordmap.filter(x => x(1).contains("2013"))
+val ordcomp = ord2013.filter(x => x(3) == "COMPLETE")
+
+val ordkeyval = ordcomp.map(x => (x(2),x))
+val custkeyval = custmap.map(x => (x(0),x))
+=======================================================================================================
+val ordcustjoin = custkeyval.join(ordkeyval)
+
+ordcustjoin.collect()
+res26: Array[(String, (Array[String], Array[String]))] = Array((8602,(Array(8602, Timothy, Gilbert, XXXXXXXXX, XXXXXXXXX, 469 Middle Berry Abbey, Caguas, PR, 00725),Array(13198, 2013-10-13 00:00:00.0, 8602, COMPLETE))), (2350,(Array(2350, Brian, Perez, XXXXXXXXX, XXXXXXXXX, 6889 Pleasant Mount, West Haven, CT, 06516),Array(6383, 2013-09-03 00:00:00.0, 2350, COMPLETE))), (2350,(Array(2350, Brian, Perez, XXXXXXXXX, XXXXXXXXX, 6889 Pleasant Mount, West Haven, CT, 06516),Array(7009, 2013-09-06 00:00:00.0, 2350, COMPLETE))), (5302,(Array(5302, Betty, Smith, XXXXXXXXX, XXXXXXXXX, 2289 Cozy Promenade, Medford, MA, 02155),Array(59733, 2013-10-11 00:00:00.0, 5302, COMPLETE))), (5302,(Array(5302, Betty, Smith, XXXXXXXXX, XXXXXXXXX, 2289 Cozy Promenade, Medford, MA, 02155..
+=======================================================================================================
+
+[Note: ordcustjoin is of "Array[(String, (Array[String], Array[String]))]" this type of collections]
+thus,
+ordcustjoin.foreach(x => println(x._2))
+output:- gives array address :- (Array[String], Array[String])
+([Ljava.lang.String;@8bfed76,[Ljava.lang.String;@7dcd3b06)
+([Ljava.lang.String;@8bfed76,[Ljava.lang.String;@3fad5ae4)
+([Ljava.lang.String;@217f2c98,[Ljava.lang.String;@480ec43a)
+([Ljava.lang.String;@26a2c0f0,[Ljava.lang.String;@95f60fb)
+([Ljava.lang.String;@26a2c0f0,[Ljava.lang.String;@1d5e7fdd)
+([Ljava.lang.String;@48f17ce8,[Ljava.lang.String;@76605ed8)
+([Ljava.lang.String;@4cab057,[Ljava.lang.String;@6a849784)
+([Ljava.lang.String;@29d1b000,[Ljava.lang.String;@5d33bd7c)
+([Ljava.lang.String;@caaf685,[Ljava.lang.String;@42dc6823)
+([Ljava.lang.String;@1121a6d5,[Ljava.lang.String;@662991c8)
+([Ljava.lang.String;@1121a6d5,[Ljava.lang.String;@2631182c)
+([Ljava.lang.String;@7df4ccb1,[Ljava.lang.String;@5c482e5c)
+
+=======================================================================================================
+val newmap = ordcustjoin.map(x => x._2)
+output:-
+newmap.collect()
+res28: Array[(Array[String], Array[String])] ....(This is array of tuples hence element can be accessed by ._)
+x._1 = Array(8602, Timothy, Gilbert, XXXXXXXXX, XXXXXXXXX, 469 Middle Berry Abbey, Caguas, PR, 00725
+x._2 = Array(13198, 2013-10-13 00:00:00.0, 8602, COMPLETE)
+=======================================================================================================
+val data1 = newmap.map(x => x._1)
+output:-
+data1.collect()              #data1 is array of array hence element can be accessed by parenthesis like x(1)
+res32: Array[Array[String]] = Array(Array(8602, Timothy, Gilbert, XXXXXXXXX, XXXXXXXXX, 469 Middle Berry Abbey, Caguas, PR, 00725),Array(2350,........
+
+=======================================================================================================
+data1.foreach(x => println(x(1)))
+output:- 
+
+Theresa
+Benjamin
+Zachary
+Zachary
+Marilyn
+Marilyn
+Marilyn
+Eric
+Mary
+Mary
+Beverly.......
+=======================================================================================================
+
+val name = data1.map(x=> (x(1),x(2)))
+
+output:- name.collect()
+res37: Array[(String, String)] = Array((Timothy,Gilbert), (Brian,Perez), (Brian,Perez), (Betty,Smith), (Betty,Smith), (Mary,Morse), (Mary,Morse), (Mary,Moore), (Mary,Moore), (Julie,Wilson), (Julie,Wilson), (Mary,Bender), (Nathan,Blair), (Nathan,Blair), (Nathan,Blair), (Nathan,Blair), (Nathan,Blair), (James,Huerta), (Mary,Wolf), (Ruth,Arnold), (Ruth,Arnold), (Ruth,Arnold), (Alan,Smith), (Ann,Werner), (Mary,Smith), (Brenda,Smith), (Zachary,Hunt), (Mark,Matthews), (Mark,Matthews), (Benjamin,Cole), (Mary,Stephens), (Austin,Lambert), (Jesse,Matthews), (Jesse,Matthews), (Jesse,Matthews), (Benjamin,Smith), (Dennis,Hall), (Dennis,Hall), (Dennis,Hall), (Raymond,Smith), (Raymond,Smith), (Karen,Smith), (Karen,Smith), (Mary,Smith), (Nathan,Mahoney), (Justin,White), (Mary,S...
+=======================================================================================================
+
+val name1 = name.map(x => (x,1))
+
+output of collection type :->   #Array[((String, String), Int)] 
+
+output:- name1.collect()
+res38: Array[((String, String), Int)] = Array(((Timothy,Gilbert),1), ((Brian,Perez),1), ((Brian,Perez),1), ((Betty,Smith),1), ((Betty,Smith),1), ((Mary,Morse),1), ((Mary,Morse),1), ((Mary,Moore),1), ((Mary,Moore),1), ((Julie,Wilson),1), ((Julie,Wilson),1), ((Mary,Bender),1), ((Nathan,Blair),1), ((Nathan,Blair),1), ((Nathan,Blair),1), ((Nathan,Blair),1), ((Nathan,Blair),1), ((James,Huerta),1), ((Mary,Wolf),1), ((Ruth,Arnold),1), ((Ruth,Arnold),1), ((Ruth,Arnold),1), ((Alan,Smith),1), ((Ann,Werner),1), ((Mary,Smith),1), ((Brenda,Smith),1), ((Zachary,Hunt),1), ((Mark,Matthews),1), ((Mark,Matthews),1), ((Benjamin,Cole),1), ((Mary,Stephens),1), ((Austin,Lambert),1), ((Jesse,Matthews),1), ((Jesse,Matthews),1), ((Jesse,Matthews),1), ((Benjamin,Smith),1), ((Dennis,Hall...
+=======================================================================================================
+
+val namecount = name1.reduceByKey(_+_)
+
+output of collection type :->   #Array[((String, String), Int)] 
+
+ouotput:- namecount.collect()
+res45: Array[((String, String), Int)] = Array(((Mary,Cantrell),1), ((Elizabeth,Stephenson),1), ((Christian,Doyle),1), ((Frank,Smith),6), ((Mary,Madden),3), ((Brian,Wilson),5), ((Grace,Moore),2), ((Marie,Shah),1), ((Terry,Washington),1), ((Alice,Mccoy),1), ((Gerald,Adkins),1), ((Mary,Rose),3), ((Laura,Owens),2), ((Mary,Hester),2), ((Mary,Cowan),7), ((Margaret,Brandt),1), ((Ryan,Daniel),2), ((Janice,Jackson),2), ((Roger,Bowman),1), ((Joshua,Livingston),3), ((Louis,Smith),4), ((Jennifer,Kerr),1), ((Marie,Henry),2), ((Kyle,Thomas),3), ((Terry,Hartman),1), ((Thomas,Colon),2), ((Megan,Moyer),3), ((Christian,Smith),12), ((Walter,Lambert),2), ((John,Estrada),3), ((Joseph,Matthews),2), ((Amanda,Brady),2), ((Mary,Huang),4), ((Samantha,Sims),1), ((Amber,Santos),2), ((Barb...
+=======================================================================================================
+
+
