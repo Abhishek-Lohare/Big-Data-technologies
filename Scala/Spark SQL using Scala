@@ -1,0 +1,689 @@
+val rdd3 =sc.textFile("/home/dbda/Downloads/sourabh_file/customers")
+
+scala> val rdd4 = rdd3.map(x=> x.split(","))
+rdd4: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[24] at map at <console>:23
+
+scala> rdd4.collect()
+res23: Array[Array[String]] = Array(Array(9327, Donna, Smith, XXXXXXXXX, XXXXXXXXX, 4114 Clear Nectar Isle, Caguas, PR, 00725), Array(9328, Mary, Perez, XXXXXXXXX, XXXXXXXXX, 376 Golden Orchard, Moreno Valley, CA, 92553), Array(9329, Eugene, Powell, XXXXXXXXX, XXXXXXXXX, 2161 Burning Maze, Metairie, LA, 70003), Array(9330, Mary, Conley, XXXXXXXXX, XXXXXXXXX, 3046 Broad Sky Dale, Caguas, PR, 00725), Array(9331, Donna, Smith, XXXXXXXXX, XXXXXXXXX, 941 Thunder Branch Heights, Clementon, NJ, 08021), Array(9332, Mary, Jordan, XXXXXXXXX, XXXXXXXXX, 1551 Quaking Bend, Caguas, PR, 00725), Array(9333, Angela, Mills, XXXXXXXXX, XXXXXXXXX, 2580 Rustic Bay, Los Angeles, CA, 90026), Array(9334, Mary, Johnston, XXXXXXXXX, XXXXXXXXX, 4145 Jagged Downs, Tampa, FL, 33624), Arra...
+
+scala> val rdd5 = rdd4.map(x=>(x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8)))
+rdd5: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String)] = MapPartitionsRDD[32] at map at <console>:23
+
+scala> rdd5.collect()
+res32: Array[(String, String, String, String, String, String, String, String, String)] = Array((9327,Donna,Smith,XXXXXXXXX,XXXXXXXXX,4114 Clear Nectar Isle,Caguas,PR,00725), (9328,Mary,Perez,XXXXXXXXX,XXXXXXXXX,376 Golden Orchard,Moreno Valley,CA,92553), (9329,Eugene,Powell,XXXXXXXXX,XXXXXXXXX,2161 Burning Maze,Metairie,LA,70003), (9330,Mary,Conley,XXXXXXXXX,XXXXXXXXX,3046 Broad Sky Dale,Caguas,PR,00725), (9331,Donna,Smith,XXXXXXXXX,XXXXXXXXX,941 Thunder Branch Heights,Clementon,NJ,08021), (9332,Mary,Jordan,XXXXXXXXX,XXXXXXXXX,1551 Quaking Bend,Caguas,PR,00725), (9333,Angela,Mills,XXXXXXXXX,XXXXXXXXX,2580 Rustic Bay,Los Angeles,CA,90026), (9334,Mary,Johnston,XXXXXXXXX,XXXXXXXXX,4145 Jagged Downs,Tampa,FL,33624), (9335,Joseph,Smith,XXXXXXXXX,XXXXXXXXX,7861 Honey...
+
+scala> rdd5.toDF()
+res33: org.apache.spark.sql.DataFrame = [_1: string, _2: string ... 7 more fields]
+
+scala> rdd5.toDF().show()
++----+------+--------+---------+---------+--------------------+-------------+---+-----+
+|  _1|    _2|      _3|       _4|       _5|                  _6|           _7| _8|   _9|
++----+------+--------+---------+---------+--------------------+-------------+---+-----+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas| PR|00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley| CA|92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie| LA|70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas| PR|00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon| NJ|08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas| PR|00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles| CA|90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa| FL|33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas| PR|00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley| CA|91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago| IL|60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park| CA|91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas| PR|00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville| CA|92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago| IL|60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas| PR|00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina| KS|67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas| PR|00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora| CO|80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas| PR|00725|
++----+------+--------+---------+---------+--------------------+-------------+---+-----+
+only showing top 20 rows
+
+# applying our own schema while creating the dataframe
+scala> rdd5.toDF("ID","Fname","LName","Password","email","Address","city","State","Zipcode").show()
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|  ID| Fname|   LName| Password|    email|             Address|         city|State|Zipcode|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas|   PR|  00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley|   CA|  92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie|   LA|  70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas|   PR|  00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon|   NJ|  08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas|   PR|  00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles|   CA|  90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa|   FL|  33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas|   PR|  00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley|   CA|  91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago|   IL|  60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park|   CA|  91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas|   PR|  00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville|   CA|  92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago|   IL|  60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas|   PR|  00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina|   KS|  67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas|   PR|  00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora|   CO|  80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas|   PR|  00725|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+only showing top 20 rows
+
+
+scala> rdd5.toDF("ID","Fname","LName","Password","email","Address","city","State","Zipcode").createTempView("cust")
+
+scala> spark.sql("select * from cust").show()
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|  ID| Fname|   LName| Password|    email|             Address|         city|State|Zipcode|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas|   PR|  00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley|   CA|  92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie|   LA|  70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas|   PR|  00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon|   NJ|  08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas|   PR|  00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles|   CA|  90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa|   FL|  33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas|   PR|  00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley|   CA|  91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago|   IL|  60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park|   CA|  91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas|   PR|  00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville|   CA|  92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago|   IL|  60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas|   PR|  00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina|   KS|  67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas|   PR|  00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora|   CO|  80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas|   PR|  00725|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+only showing top 20 rows
+
+
+scala> spark.sql("select ID as id from cust").show()
++----+
+|  id|
++----+
+|9327|
+|9328|
+|9329|
+|9330|
+|9331|
+|9332|
+|9333|
+|9334|
+|9335|
+|9336|
+|9337|
+|9338|
+|9339|
+|9340|
+|9341|
+|9342|
+|9343|
+|9344|
+|9345|
+|9346|
++----+
+only showing top 20 rows
+
+
+scala> spark.sql("select * from cust").show()
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|  ID| Fname|   LName| Password|    email|             Address|         city|State|Zipcode|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas|   PR|  00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley|   CA|  92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie|   LA|  70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas|   PR|  00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon|   NJ|  08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas|   PR|  00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles|   CA|  90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa|   FL|  33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas|   PR|  00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley|   CA|  91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago|   IL|  60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park|   CA|  91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas|   PR|  00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville|   CA|  92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago|   IL|  60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas|   PR|  00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina|   KS|  67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas|   PR|  00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora|   CO|  80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas|   PR|  00725|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+only showing top 20 rows
+
+====================================================================================================================================================
+
+val rdd1=sc.textFile("/home/dbda/Downloads/sourabh_file/orders")
+
+scala> val rdd2=rdd1.map(x=> x.split(","))
+rdd2: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[2] at map at <console>:23
+
+scala> rdd2.collect()
+res1: Array[Array[String]] = Array(Array(100000, 2017-11-07 00:00:00.0, 99999, COMPLETE), Array(100001, 2017-11-07 00:00:00.0, 99994, COMPLETE), Array(100002, 2017-11-07 00:00:00.0, 99995, PENDING), Array(100003, 2017-11-07 00:00:00.0, 99996, COMPLETE), Array(100004, 2017-11-07 10:02:00.0, 0, CLOSED), Array(100005, 2017-11-07 10:02:00.0, 0, CLOSED), Array(100006, 2017-11-07 10:02:00.0, 0, CLOSED), Array(50004, 2014-06-02 00:00:00.0, 7897, COMPLETE), Array(50005, 2014-06-02 00:00:00.0, 9216, PENDING_PAYMENT), Array(50006, 2014-06-02 00:00:00.0, 11020, COMPLETE), Array(50007, 2014-06-02 00:00:00.0, 1573, PENDING), Array(50008, 2014-06-02 00:00:00.0, 6296, COMPLETE), Array(50009, 2014-06-02 00:00:00.0, 5082, PROCESSING), Array(50010, 2014-06-02 00:00:00.0, 5061, C...
+
+scala> val rdd3=rdd2.map(x=> (x(0),x(1),x(2),x(3)))
+rdd3: org.apache.spark.rdd.RDD[(String, String, String, String, String)] = MapPartitionsRDD[3] at map at <console>:23
+
+
+=================================================================================================================================================================================================================
+
+--------------------------------------------------------------RE_EXAM QUESTION PAPER-----------------------------------
+
+Q2
+
+Customers Schema:
+1.	customer_id             int   
+2.	customer_fname          string
+3.	customer_lname          string
+4.	customer_email          string
+5.	customer_password       string
+6.	customer_street         string
+7.	customer_city           string
+8.	customer_state          string
+9.	customer_zipcode        string	
+Orders Schema:
+1.	order_id                int   
+2.	order_date              string
+3.	order_customer_id       int   
+4.	order_status            string
+Output Requirements:
+1.	Find out the customers who have made more than 5 orders
+2.	Customer name must start with "M"
+3.	Use text format for the output files
+4.	Use "|" as field seperator
+5.	Place the result data in HDFS directory /result/Q2
+6.	Output should only contain customer_fname,customer_lname, count
+7.	Output should be sorted by count in descending order
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+scala> val rdd =sc.textFile("/home/dbda/Downloads/sourabh_file/customers")
+rdd: org.apache.spark.rdd.RDD[String] = /home/dbda/Downloads/sourabh_file/customers MapPartitionsRDD[1] at textFile at <console>:23
+
+scala> rdd.collect()
+org.apache.hadoop.mapred.InvalidInputException: Input path does not exist: file:/home/dbda/Downloads/sourabh_file/customers
+  at org.apache.hadoop.mapred.FileInputFormat.singleThreadedListStatus(FileInputFormat.java:287)
+  at org.apache.hadoop.mapred.FileInputFormat.listStatus(FileInputFormat.java:229)
+  at org.apache.hadoop.mapred.FileInputFormat.getSplits(FileInputFormat.java:315)
+  at org.apache.spark.rdd.HadoopRDD.getPartitions(HadoopRDD.scala:208)
+  at org.apache.spark.rdd.RDD.$anonfun$partitions$2(RDD.scala:292)
+  at scala.Option.getOrElse(Option.scala:189)
+  at org.apache.spark.rdd.RDD.partitions(RDD.scala:288)
+  at org.apache.spark.rdd.MapPartitionsRDD.getPartitions(MapPartitionsRDD.scala:49)
+  at org.apache.spark.rdd.RDD.$anonfun$partitions$2(RDD.scala:292)
+  at scala.Option.getOrElse(Option.scala:189)
+  at org.apache.spark.rdd.RDD.partitions(RDD.scala:288)
+  at org.apache.spark.SparkContext.runJob(SparkContext.scala:2293)
+  at org.apache.spark.rdd.RDD.$anonfun$collect$1(RDD.scala:1021)
+  at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:151)
+  at org.apache.spark.rdd.RDDOperationScope$.withScope(RDDOperationScope.scala:112)
+  at org.apache.spark.rdd.RDD.withScope(RDD.scala:406)
+  at org.apache.spark.rdd.RDD.collect(RDD.scala:1020)
+  ... 47 elided
+
+scala> val rdd =sc.textFile("/home/sourabh/dataset/customers")
+rdd: org.apache.spark.rdd.RDD[String] = /home/sourabh/dataset/customers MapPartitionsRDD[3] at textFile at <console>:23
+
+scala> rdd.collect()
+res1: Array[String] = Array(9327,Donna,Smith,XXXXXXXXX,XXXXXXXXX,4114 Clear Nectar Isle,Caguas,PR,00725, 9328,Mary,Perez,XXXXXXXXX,XXXXXXXXX,376 Golden Orchard,Moreno Valley,CA,92553, 9329,Eugene,Powell,XXXXXXXXX,XXXXXXXXX,2161 Burning Maze,Metairie,LA,70003, 9330,Mary,Conley,XXXXXXXXX,XXXXXXXXX,3046 Broad Sky Dale,Caguas,PR,00725, 9331,Donna,Smith,XXXXXXXXX,XXXXXXXXX,941 Thunder Branch Heights,Clementon,NJ,08021, 9332,Mary,Jordan,XXXXXXXXX,XXXXXXXXX,1551 Quaking Bend,Caguas,PR,00725, 9333,Angela,Mills,XXXXXXXXX,XXXXXXXXX,2580 Rustic Bay,Los Angeles,CA,90026, 9334,Mary,Johnston,XXXXXXXXX,XXXXXXXXX,4145 Jagged Downs,Tampa,FL,33624, 9335,Joseph,Smith,XXXXXXXXX,XXXXXXXXX,7861 Honey Acres,Caguas,PR,00725, 9336,Janice,Guzman,XXXXXXXXX,XXXXXXXXX,8143 Dusty Island,Spr...
+
+scala> val rdp =sc.textFile("/home/sourabh/dataset/orders")
+rdp: org.apache.spark.rdd.RDD[String] = /home/sourabh/dataset/orders MapPartitionsRDD[5] at textFile at <console>:23
+
+scala> rdp.collect()
+res2: Array[String] = Array(100000,2017-11-07 00:00:00.0,99999,COMPLETE, 100001,2017-11-07 00:00:00.0,99994,COMPLETE, 100002,2017-11-07 00:00:00.0,99995,PENDING, 100003,2017-11-07 00:00:00.0,99996,COMPLETE, 100004,2017-11-07 10:02:00.0,0,CLOSED, 100005,2017-11-07 10:02:00.0,0,CLOSED, 100006,2017-11-07 10:02:00.0,0,CLOSED, 50004,2014-06-02 00:00:00.0,7897,COMPLETE, 50005,2014-06-02 00:00:00.0,9216,PENDING_PAYMENT, 50006,2014-06-02 00:00:00.0,11020,COMPLETE, 50007,2014-06-02 00:00:00.0,1573,PENDING, 50008,2014-06-02 00:00:00.0,6296,COMPLETE, 50009,2014-06-02 00:00:00.0,5082,PROCESSING, 50010,2014-06-02 00:00:00.0,5061,COMPLETE, 50011,2014-06-02 00:00:00.0,9819,PENDING_PAYMENT, 50012,2014-06-02 00:00:00.0,10696,PENDING, 50013,2014-06-02 00:00:00.0,10275,PROCESSING...
+
+scala> val rdd2 = rdd.map(x=> x.split(","))
+rdd2: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[6] at map at <console>:23
+
+scala> val rdd3 =rdd2.map(x=>(x(0),x(1),x(2),x(3),x(4),x(5),x(6),x(7),x(8)))
+rdd3: org.apache.spark.rdd.RDD[(String, String, String, String, String, String, String, String, String)] = MapPartitionsRDD[7] at map at <console>:23
+
+scala> rdd3.toDF("ID","Fname","LName","Password","email","Address","city","State","Zipcode").show()
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|  ID| Fname|   LName| Password|    email|             Address|         city|State|Zipcode|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas|   PR|  00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley|   CA|  92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie|   LA|  70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas|   PR|  00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon|   NJ|  08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas|   PR|  00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles|   CA|  90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa|   FL|  33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas|   PR|  00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley|   CA|  91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago|   IL|  60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park|   CA|  91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas|   PR|  00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville|   CA|  92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago|   IL|  60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas|   PR|  00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina|   KS|  67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas|   PR|  00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora|   CO|  80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas|   PR|  00725|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+only showing top 20 rows
+
+
+scala> val rdp1=rdp.map(x=> x.split(","))
+rdp1: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[11] at map at <console>:23
+
+scala> val rdp2=rdp1.map(x=> (x(0),x(1),x(2),x(3)))
+rdp2: org.apache.spark.rdd.RDD[(String, String, String, String)] = MapPartitionsRDD[12] at map at <console>:23
+
+scala> rdp2.toDF("order_id","order_date","order_customer_id","order_status").show()  
++--------+--------------------+-----------------+---------------+
+|order_id|          order_date|order_customer_id|   order_status|
++--------+--------------------+-----------------+---------------+
+|  100000|2017-11-07 00:00:...|            99999|       COMPLETE|
+|  100001|2017-11-07 00:00:...|            99994|       COMPLETE|
+|  100002|2017-11-07 00:00:...|            99995|        PENDING|
+|  100003|2017-11-07 00:00:...|            99996|       COMPLETE|
+|  100004|2017-11-07 10:02:...|                0|         CLOSED|
+|  100005|2017-11-07 10:02:...|                0|         CLOSED|
+|  100006|2017-11-07 10:02:...|                0|         CLOSED|
+|   50004|2014-06-02 00:00:...|             7897|       COMPLETE|
+|   50005|2014-06-02 00:00:...|             9216|PENDING_PAYMENT|
+|   50006|2014-06-02 00:00:...|            11020|       COMPLETE|
+|   50007|2014-06-02 00:00:...|             1573|        PENDING|
+|   50008|2014-06-02 00:00:...|             6296|       COMPLETE|
+|   50009|2014-06-02 00:00:...|             5082|     PROCESSING|
+|   50010|2014-06-02 00:00:...|             5061|       COMPLETE|
+|   50011|2014-06-02 00:00:...|             9819|PENDING_PAYMENT|
+|   50012|2014-06-02 00:00:...|            10696|        PENDING|
+|   50013|2014-06-02 00:00:...|            10275|     PROCESSING|
+|   50014|2014-06-02 00:00:...|             8218|     PROCESSING|
+|   50015|2014-06-02 00:00:...|             1578|       COMPLETE|
+|   50016|2014-06-02 00:00:...|             2368|PENDING_PAYMENT|
++--------+--------------------+-----------------+---------------+
+only showing top 20 rows
+
+scala> rdp2.toDF("order_id","order_date","order_customer_id","order_status").createTempView("order")
+
+scala> rdd3.toDF("ID","Fname","LName","Password","email","Address","city","State","Zipcode").show()
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|  ID| Fname|   LName| Password|    email|             Address|         city|State|Zipcode|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas|   PR|  00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley|   CA|  92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie|   LA|  70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas|   PR|  00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon|   NJ|  08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas|   PR|  00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles|   CA|  90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa|   FL|  33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas|   PR|  00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley|   CA|  91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago|   IL|  60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park|   CA|  91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas|   PR|  00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville|   CA|  92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago|   IL|  60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas|   PR|  00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina|   KS|  67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas|   PR|  00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora|   CO|  80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas|   PR|  00725|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+only showing top 20 rows
+
+
+scala> rdd3.toDF("ID","Fname","LName","Password","email","Address","city","State","Zipcode").createTempView("customer")
+
+scala> spark.sql("select * from customer").show()
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|  ID| Fname|   LName| Password|    email|             Address|         city|State|Zipcode|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+|9327| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|4114 Clear Nectar...|       Caguas|   PR|  00725|
+|9328|  Mary|   Perez|XXXXXXXXX|XXXXXXXXX|  376 Golden Orchard|Moreno Valley|   CA|  92553|
+|9329|Eugene|  Powell|XXXXXXXXX|XXXXXXXXX|   2161 Burning Maze|     Metairie|   LA|  70003|
+|9330|  Mary|  Conley|XXXXXXXXX|XXXXXXXXX| 3046 Broad Sky Dale|       Caguas|   PR|  00725|
+|9331| Donna|   Smith|XXXXXXXXX|XXXXXXXXX|941 Thunder Branc...|    Clementon|   NJ|  08021|
+|9332|  Mary|  Jordan|XXXXXXXXX|XXXXXXXXX|   1551 Quaking Bend|       Caguas|   PR|  00725|
+|9333|Angela|   Mills|XXXXXXXXX|XXXXXXXXX|     2580 Rustic Bay|  Los Angeles|   CA|  90026|
+|9334|  Mary|Johnston|XXXXXXXXX|XXXXXXXXX|   4145 Jagged Downs|        Tampa|   FL|  33624|
+|9335|Joseph|   Smith|XXXXXXXXX|XXXXXXXXX|    7861 Honey Acres|       Caguas|   PR|  00725|
+|9336|Janice|  Guzman|XXXXXXXXX|XXXXXXXXX|   8143 Dusty Island|Spring Valley|   CA|  91977|
+|9337|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|    5687 Lazy Parade|      Chicago|   IL|  60643|
+|9338| James|   Davis|XXXXXXXXX|XXXXXXXXX|4715 Harvest Cree...|  Canoga Park|   CA|  91304|
+|9339|   Ann|   Moyer|XXXXXXXXX|XXXXXXXXX|4417 Hazy Creek Pike|       Caguas|   PR|  00725|
+|9340|  Mary|   Smith|XXXXXXXXX|XXXXXXXXX|7773 Merry Autoroute|  Victorville|   CA|  92392|
+|9341| Karen| Collins|XXXXXXXXX|XXXXXXXXX|    6163 Lazy Pointe|      Chicago|   IL|  60613|
+|9342|Teresa|   Grant|XXXXXXXXX|XXXXXXXXX|3684 Old River Cr...|       Caguas|   PR|  00725|
+|9343|  Mary|   Knapp|XXXXXXXXX|XXXXXXXXX|2394 Gentle Treas...|       Salina|   KS|  67401|
+|9344| Kelly|   Smith|XXXXXXXXX|XXXXXXXXX|8355 Lazy Anchor ...|       Caguas|   PR|  00725|
+|9345|  Mary|  Branch|XXXXXXXXX|XXXXXXXXX|  4767 Wishing Round|       Aurora|   CO|  80013|
+|9346|  Jack|   Smith|XXXXXXXXX|XXXXXXXXX|4208 Jagged Apple...|       Caguas|   PR|  00725|
++----+------+--------+---------+---------+--------------------+-------------+-----+-------+
+only showing top 20 rows
+
+
+scala> spark.sql("select * from order").show()
++--------+--------------------+-----------------+---------------+
+|order_id|          order_date|order_customer_id|   order_status|
++--------+--------------------+-----------------+---------------+
+|  100000|2017-11-07 00:00:...|            99999|       COMPLETE|
+|  100001|2017-11-07 00:00:...|            99994|       COMPLETE|
+|  100002|2017-11-07 00:00:...|            99995|        PENDING|
+|  100003|2017-11-07 00:00:...|            99996|       COMPLETE|
+|  100004|2017-11-07 10:02:...|                0|         CLOSED|
+|  100005|2017-11-07 10:02:...|                0|         CLOSED|
+|  100006|2017-11-07 10:02:...|                0|         CLOSED|
+|   50004|2014-06-02 00:00:...|             7897|       COMPLETE|
+|   50005|2014-06-02 00:00:...|             9216|PENDING_PAYMENT|
+|   50006|2014-06-02 00:00:...|            11020|       COMPLETE|
+|   50007|2014-06-02 00:00:...|             1573|        PENDING|
+|   50008|2014-06-02 00:00:...|             6296|       COMPLETE|
+|   50009|2014-06-02 00:00:...|             5082|     PROCESSING|
+|   50010|2014-06-02 00:00:...|             5061|       COMPLETE|
+|   50011|2014-06-02 00:00:...|             9819|PENDING_PAYMENT|
+|   50012|2014-06-02 00:00:...|            10696|        PENDING|
+|   50013|2014-06-02 00:00:...|            10275|     PROCESSING|
+|   50014|2014-06-02 00:00:...|             8218|     PROCESSING|
+|   50015|2014-06-02 00:00:...|             1578|       COMPLETE|
+|   50016|2014-06-02 00:00:...|             2368|PENDING_PAYMENT|
++--------+--------------------+-----------------+---------------+
+only showing top 20 rows
+
+spark.sql("select * from customer inner join order on (customer.ID == order.order_id) ").show()
+
+
+
+scala> spark.sql("select * from customer inner join order on (customer.ID = order.order_id) ").show()
++----+---------+----------+---------+---------+--------------------+---------------+-----+-------+--------+--------------------+-----------------+---------------+
+|  ID|    Fname|     LName| Password|    email|             Address|           city|State|Zipcode|order_id|          order_date|order_customer_id|   order_status|
++----+---------+----------+---------+---------+--------------------+---------------+-----+-------+--------+--------------------+-----------------+---------------+
+| 296|     Mary|    Mullen|XXXXXXXXX|XXXXXXXXX|     7370 Sleepy Way|        Detroit|   MI|  48213|     296|2013-07-26 00:00:...|             6665|       COMPLETE|
+| 467|    James|     Smith|XXXXXXXXX|XXXXXXXXX|    6324 Golden Line|        Modesto|   CA|  95350|     467|2013-07-27 00:00:...|             1719|PENDING_PAYMENT|
+| 675|     Mary|      Mata|XXXXXXXXX|XXXXXXXXX|      3737 Blue Path|     Greensboro|   NC|  27410|     675|2013-07-29 00:00:...|             3414|       COMPLETE|
+| 691|     Mary|   Terrell|XXXXXXXXX|XXXXXXXXX|      3310 Blue Quay|       Stafford|   VA|  22554|     691|2013-07-29 00:00:...|              517|PENDING_PAYMENT|
+| 829|     Mary|     Smith|XXXXXXXXX|XXXXXXXXX|   6009 Quiet Corner|    West Orange|   NJ|  07052|     829|2013-07-29 00:00:...|             8977|PENDING_PAYMENT|
+|1090|Katherine|    Massey|XXXXXXXXX|XXXXXXXXX|    9394 Umber Abbey|         Caguas|   PR|  00725|    1090|2013-07-31 00:00:...|             9940|     PROCESSING|
+|1159|     Mary|  Morrison|XXXXXXXXX|XXXXXXXXX|    7775 Misty Place| Stone Mountain|   GA|  30083|    1159|2013-07-31 00:00:...|             9619|        ON_HOLD|
+|1436|    Sarah|     Smith|XXXXXXXXX|XXXXXXXXX|     8626 Silver End|     Lewisville|   TX|  75067|    1436|2013-08-01 00:00:...|            10608|PENDING_PAYMENT|
+|1512|     Mary|      Rowe|XXXXXXXXX|XXXXXXXXX|2924 Velvet Dale ...|         Caguas|   PR|  00725|    1512|2013-08-01 00:00:...|            11560|     PROCESSING|
+|1572|  Brandon|     Smith|XXXXXXXXX|XXXXXXXXX|     3996 Misty Vale|           Yuma|   AZ|  85364|    1572|2013-08-02 00:00:...|              353|       COMPLETE|
+|2069|    Alice|   Ellison|XXXXXXXXX|XXXXXXXXX|  6232 Red Rise Rise|         Caguas|   PR|  00725|    2069|2013-08-05 00:00:...|             1466|         CLOSED|
+|2088|    Frank|    Rhodes|XXXXXXXXX|XXXXXXXXX|    8547 Foggy Pines|         Caguas|   PR|  00725|    2088|2013-08-05 00:00:...|             8296|       COMPLETE|
+|2136|Catherine|    Turner|XXXXXXXXX|XXXXXXXXX|      1116 Hazy Path|         Caguas|   PR|  00725|    2136|2013-08-05 00:00:...|            11420|     PROCESSING|
+|2162| Margaret|     Smith|XXXXXXXXX|XXXXXXXXX|6257 Round Panda ...|        Decatur|   GA|  30032|    2162|2013-08-06 00:00:...|             7139|     PROCESSING|
+|2294|    Jacob|     Smith|XXXXXXXXX|XXXXXXXXX|   3610 Indian Beach|      San Diego|   CA|  92154|    2294|2013-08-06 00:00:...|             4795|PENDING_PAYMENT|
+|2904|     Lisa|    Walton|XXXXXXXXX|XXXXXXXXX|   1221 Easy Corners|           Mesa|   AZ|  85201|    2904|2013-08-10 00:00:...|             4942|PENDING_PAYMENT|
+|3210|  Richard|     Welch|XXXXXXXXX|XXXXXXXXX|   5382 Hazy Pathway|      Escondido|   CA|  92026|    3210|2013-08-12 00:00:...|            10634| PAYMENT_REVIEW|
+|3414|     Ruth|     Smith|XXXXXXXXX|XXXXXXXXX|2355 Velvet Hicko...|         Caguas|   PR|  00725|    3414|2013-08-13 00:00:...|             4861|        PENDING|
+|3606|     Joan|Strickland|XXXXXXXXX|XXXXXXXXX| 2319 Fallen Impasse|       New York|   NY|  10033|    3606|2013-08-15 00:00:...|             3536|       COMPLETE|
+|3959|    Laura|   Shields|XXXXXXXXX|XXXXXXXXX|9095 Indian Quail...|Fort Lauderdale|   FL|  33311|    3959|2013-08-17 00:00:...|            10831|        PENDING|
++----+---------+----------+---------+---------+--------------------+---------------+-----+-------+--------+--------------------+-----------------+---------------+
+only showing top 20 rows
+
+
+scala> spark.sql("select * from customer inner join order on (customer.ID = order.order_id) ").create
+createGlobalTempView   createOrReplaceGlobalTempView   createOrReplaceTempView   createTempView
+
+scala> spark.sql("select * from customer inner join order on (customer.ID = order.order_id) ").createTempView("Cust_ord")
+
+scala> saprk.sql("select * from Cust_ord").show()
+<console>:23: error: not found: value saprk
+       saprk.sql("select * from Cust_ord").show()
+       ^
+
+scala> spark.sql("select * from Cust_ord").show()
++----+---------+----------+---------+---------+--------------------+---------------+-----+-------+--------+--------------------+-----------------+---------------+
+|  ID|    Fname|     LName| Password|    email|             Address|           city|State|Zipcode|order_id|          order_date|order_customer_id|   order_status|
++----+---------+----------+---------+---------+--------------------+---------------+-----+-------+--------+--------------------+-----------------+---------------+
+| 296|     Mary|    Mullen|XXXXXXXXX|XXXXXXXXX|     7370 Sleepy Way|        Detroit|   MI|  48213|     296|2013-07-26 00:00:...|             6665|       COMPLETE|
+| 467|    James|     Smith|XXXXXXXXX|XXXXXXXXX|    6324 Golden Line|        Modesto|   CA|  95350|     467|2013-07-27 00:00:...|             1719|PENDING_PAYMENT|
+| 675|     Mary|      Mata|XXXXXXXXX|XXXXXXXXX|      3737 Blue Path|     Greensboro|   NC|  27410|     675|2013-07-29 00:00:...|             3414|       COMPLETE|
+| 691|     Mary|   Terrell|XXXXXXXXX|XXXXXXXXX|      3310 Blue Quay|       Stafford|   VA|  22554|     691|2013-07-29 00:00:...|              517|PENDING_PAYMENT|
+| 829|     Mary|     Smith|XXXXXXXXX|XXXXXXXXX|   6009 Quiet Corner|    West Orange|   NJ|  07052|     829|2013-07-29 00:00:...|             8977|PENDING_PAYMENT|
+|1090|Katherine|    Massey|XXXXXXXXX|XXXXXXXXX|    9394 Umber Abbey|         Caguas|   PR|  00725|    1090|2013-07-31 00:00:...|             9940|     PROCESSING|
+|1159|     Mary|  Morrison|XXXXXXXXX|XXXXXXXXX|    7775 Misty Place| Stone Mountain|   GA|  30083|    1159|2013-07-31 00:00:...|             9619|        ON_HOLD|
+|1436|    Sarah|     Smith|XXXXXXXXX|XXXXXXXXX|     8626 Silver End|     Lewisville|   TX|  75067|    1436|2013-08-01 00:00:...|            10608|PENDING_PAYMENT|
+|1512|     Mary|      Rowe|XXXXXXXXX|XXXXXXXXX|2924 Velvet Dale ...|         Caguas|   PR|  00725|    1512|2013-08-01 00:00:...|            11560|     PROCESSING|
+|1572|  Brandon|     Smith|XXXXXXXXX|XXXXXXXXX|     3996 Misty Vale|           Yuma|   AZ|  85364|    1572|2013-08-02 00:00:...|              353|       COMPLETE|
+|2069|    Alice|   Ellison|XXXXXXXXX|XXXXXXXXX|  6232 Red Rise Rise|         Caguas|   PR|  00725|    2069|2013-08-05 00:00:...|             1466|         CLOSED|
+|2088|    Frank|    Rhodes|XXXXXXXXX|XXXXXXXXX|    8547 Foggy Pines|         Caguas|   PR|  00725|    2088|2013-08-05 00:00:...|             8296|       COMPLETE|
+|2136|Catherine|    Turner|XXXXXXXXX|XXXXXXXXX|      1116 Hazy Path|         Caguas|   PR|  00725|    2136|2013-08-05 00:00:...|            11420|     PROCESSING|
+|2162| Margaret|     Smith|XXXXXXXXX|XXXXXXXXX|6257 Round Panda ...|        Decatur|   GA|  30032|    2162|2013-08-06 00:00:...|             7139|     PROCESSING|
+|2294|    Jacob|     Smith|XXXXXXXXX|XXXXXXXXX|   3610 Indian Beach|      San Diego|   CA|  92154|    2294|2013-08-06 00:00:...|             4795|PENDING_PAYMENT|
+|2904|     Lisa|    Walton|XXXXXXXXX|XXXXXXXXX|   1221 Easy Corners|           Mesa|   AZ|  85201|    2904|2013-08-10 00:00:...|             4942|PENDING_PAYMENT|
+|3210|  Richard|     Welch|XXXXXXXXX|XXXXXXXXX|   5382 Hazy Pathway|      Escondido|   CA|  92026|    3210|2013-08-12 00:00:...|            10634| PAYMENT_REVIEW|
+|3414|     Ruth|     Smith|XXXXXXXXX|XXXXXXXXX|2355 Velvet Hicko...|         Caguas|   PR|  00725|    3414|2013-08-13 00:00:...|             4861|        PENDING|
+|3606|     Joan|Strickland|XXXXXXXXX|XXXXXXXXX| 2319 Fallen Impasse|       New York|   NY|  10033|    3606|2013-08-15 00:00:...|             3536|       COMPLETE|
+|3959|    Laura|   Shields|XXXXXXXXX|XXXXXXXXX|9095 Indian Quail...|Fort Lauderdale|   FL|  33311|    3959|2013-08-17 00:00:...|            10831|        PENDING|
++----+---------+----------+---------+---------+--------------------+---------------+-----+-------+--------+--------------------+-----------------+---------------+
+only showing top 20 rows
+
+spark.sql("select Fname ,Lname from Cust_ord where order_customer_id > 5 group by order_customer_id ").show() 
+
+
+
+2.Customer name must start with "M"
+
+scala> spark.sql("select Fname ,Lname from customer where Fname like 'M%'").show() 
++-------+---------+
+|  Fname|    Lname|
++-------+---------+
+|   Mary|    Perez|
+|   Mary|   Conley|
+|   Mary|   Jordan|
+|   Mary| Johnston|
+|   Mary|    Smith|
+|   Mary|    Smith|
+|   Mary|    Knapp|
+|   Mary|   Branch|
+|   Mary|  Fuentes|
+|   Mary| Martinez|
+|   Mary|    Lewis|
+|Michael|    Scott|
+|   Mary|    Smith|
+|   Mary|    Smith|
+|   Mary|    Giles|
+|   Mary|  Simmons|
+|   Mary|   Church|
+|   Mary|  Cabrera|
+|Matthew|    Smith|
+|   Mary|Patterson|
++-------+---------+
+only showing top 20 rows
+
+
+
+cala> spark.sql("select Fname ,Lname,order_customer_id from Cust_ord where order_status= 'COMPLETE'").show()
++--------+----------+-----------------+
+|   Fname|     Lname|order_customer_id|
++--------+----------+-----------------+
+|    Mary|    Mullen|             6665|
+|    Mary|      Mata|             3414|
+| Brandon|     Smith|              353|
+|   Frank|    Rhodes|             8296|
+|    Joan|Strickland|             3536|
+|    Mary|  Villegas|             9751|
+|  Robert|  Holloway|             1127|
+|  Ashley|     Smith|            11275|
+|    Mary|     Smith|             5946|
+|    Mary|     Olson|             1395|
+|    Mary|     Scott|             4610|
+|    Eric|      King|             1439|
+|  Samuel|     Smith|            10169|
+|    Mary|     Smith|             9946|
+|    Lisa|     Smith|             4908|
+|    Emma|   Russell|             2979|
+|Patricia|   Vincent|             5441|
+|    Mary|     Smith|             2833|
+|    John|     Stout|             8693|
+|    Mary|     Smith|             8203|
++--------+----------+-----------------+
+only showing top 20 rows
+
+spark.sql("select Fname ,Lname ,count(order_customer_id) cnt from Cust_ord where cnt > 5 group by Fname ,Lname ").show()
+
+
+1.Find out the customers who have made more than 5 orders
+
+scala> spark.sql("select Fname ,Lname,count(*) cnt from Cust_ord group by Fname,Lname having cnt >5").show()
++-------+--------+---+
+|  Fname|   Lname|cnt|
++-------+--------+---+
+|  James|   Smith| 52|
+|  Bobby|   Smith|  6|
+| Gerald|   Smith| 11|
+|   Mary|   Henry|  6|
+|   Judy|   Smith| 14|
+| Judith|   Smith| 13|
+|Brandon|   Smith| 14|
+| Philip|   Smith|  6|
+|   Mary|Gonzalez|  8|
+|   Mary| Ramirez|  8|
+|   Mary|    Wood|  8|
+|   Mary| Carroll|  6|
+|   Jose|   Smith|  9|
+|   Mary|   Baker|  8|
+|   Mary| Freeman|  6|
+|Heather|   Smith| 11|
+| Ronald|   Smith|  8|
+|   Mary|     Day|  6|
+|   Mary|   Ortiz|  9|
+|   Mary|Williams| 28|
++-------+--------+---+
+only showing top 20 rows
+
+# order by descending:
+
+scala> spark.sql("select Fname ,Lname,count(*) cnt from Cust_ord group by Fname,Lname having cnt >5 order by cnt desc")..write.option("delimiter","\t").format("text").save("hdfs://localhost:9000//result/Q2")
+
++-----------+--------+----+
+|      Fname|   Lname| cnt|
++-----------+--------+----+
+|       Mary|   Smith|1736|
+|      James|   Smith|  52|
+|       John|   Smith|  49|
+|      David|   Smith|  48|
+|     Robert|   Smith|  47|
+|    William|   Smith|  38|
+|       Mary|   Jones|  36|
+|  Elizabeth|   Smith|  33|
+|    Michael|   Smith|  31|
+|       Mary|Williams|  28|
+|     Andrew|   Smith|  28|
+|Christopher|   Smith|  27|
+|   Jennifer|   Smith|  26|
+|      Karen|   Smith|  25|
+|    Richard|   Smith|  25|
+|      Donna|   Smith|  24|
+|     George|   Smith|  24|
+|       Mary|   Brown|  23|
+|    Matthew|   Smith|  23|
+|    Deborah|   Smith|  23|
++-----------+--------+----+
+only showing top 20 rows
+
+
+# saving sql output in text fomrmat on hdfs: To save the file in the  text format we need to concat all column into single column
+
+
+scala> val gf = spark.sql("select Fname ,Lname,count(*) cnt from Cust_ord group by Fname,Lname having cnt >5 order by cnt desc").createTempView("sq")
+gf: Unit = ()
+
+scala> spark.sql("select * from sq").show()
++-----------+--------+----+
+|      Fname|   Lname| cnt|
++-----------+--------+----+
+|       Mary|   Smith|1736|
+|      James|   Smith|  52|
+|       John|   Smith|  49|
+|      David|   Smith|  48|
+|     Robert|   Smith|  47|
+|    William|   Smith|  38|
+|       Mary|   Jones|  36|
+|  Elizabeth|   Smith|  33|
+|    Michael|   Smith|  31|
+|       Mary|Williams|  28|
+|     Andrew|   Smith|  28|
+|Christopher|   Smith|  27|
+|   Jennifer|   Smith|  26|
+|      Karen|   Smith|  25|
+|    Richard|   Smith|  25|
+|      Donna|   Smith|  24|
+|     George|   Smith|  24|
+|       Mary|   Brown|  23|
+|    Matthew|   Smith|  23|
+|    Deborah|   Smith|  23|
++-----------+--------+----+
+only showing top 20 rows
+
+
+scala> val q1 = spark.sql("select concat(Fname,' ' ,Lname,' ',cnt)from sq").write.option("delimiter","|").format("text").save("hdfs://localhost:9000//result/Q2/txtans1")
+q1: Unit = ()
+
+
+========================================================================================Output Svaing============================================================================================================
+
+scala> val gf = spark.sql("select Fname ,Lname,count(*) cnt from Cust_ord group by Fname,Lname having cnt >5 order by cnt desc").write.format("csv").save("hdfs://localhost:9000//result/Q2/ans")
+
+# to check the out cat the outputon another terminal using path from hdfs
+hdfs dfs -cat /result/Q2/CSVans/part-00000-3428316e-a572-47ba-923d-bf115d73d8e8-c000.csv/
+
+# saving the output in csv format using delimiter " | " on hdfs
+scala> val gf = spark.sql("select Fname ,Lname,count(*) cnt from Cust_ord group by Fname,Lname having cnt >5 order by cnt desc").write.option("delimiter","|").format("csv").save("hdfs://localhost:9000//result/Q2/CSVans")
+gf: Unit = ()
+
+
+# saving sql output in text fomrmat on hdfs: To save the file in the  text format we need to concat all column into single column
+
+
+scala> val gf = spark.sql("select Fname ,Lname,count(*) cnt from Cust_ord group by Fname,Lname having cnt >5 order by cnt desc").createTempView("sq")
+gf: Unit = ()
+
+scala> spark.sql("select * from sq").show()
++-----------+--------+----+
+|      Fname|   Lname| cnt|
++-----------+--------+----+
+|       Mary|   Smith|1736|
+|      James|   Smith|  52|
+|       John|   Smith|  49|
+|      David|   Smith|  48|
+|     Robert|   Smith|  47|
+|    William|   Smith|  38|
+|       Mary|   Jones|  36|
+|  Elizabeth|   Smith|  33|
+|    Michael|   Smith|  31|
+|       Mary|Williams|  28|
+|     Andrew|   Smith|  28|
+|Christopher|   Smith|  27|
+|   Jennifer|   Smith|  26|
+|      Karen|   Smith|  25|
+|    Richard|   Smith|  25|
+|      Donna|   Smith|  24|
+|     George|   Smith|  24|
+|       Mary|   Brown|  23|
+|    Matthew|   Smith|  23|
+|    Deborah|   Smith|  23|
++-----------+--------+----+
+only showing top 20 rows
+
+
+scala> val q1 = spark.sql("select concat(Fname,' ' ,Lname,' ',cnt)from sq").write.option("delimiter","|").format("text").save("hdfs://localhost:9000//result/Q2/txtans1")
+q1: Unit = ()
+
+
+
+=================================================================================================================================================================================================================
