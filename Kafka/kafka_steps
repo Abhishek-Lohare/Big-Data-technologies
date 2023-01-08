@@ -1,0 +1,86 @@
+# To start the kafka
+sudo /usr/local/kafka/bin/kafka-server-start.sh /usr/local/kafka/config/server.properties
+
+# To create the topic
+sudo /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1  --partitions 1 --topic prac
+
+# To start the producer
+sudo /usr/local/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic prac
+
+# To start the consumer
+sudo /usr/local/kafka/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic prac --from-beginning
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Apache Kafta
+````````````````
+- Publish-subcribe msg system
+- fast,scalable,fault-tolernt
+
+install ZooKeeper
+
+Step 1 :- sudo apt-get install zookeeperd
+
+Step 2 :- netstat -ant | grep :2181
+
+tcp6       0      0 :::2181                 :::*                    LISTEN
+
+Install Kafka
+
+Step 1 :-  root@one:~# sudo mkdir -p /usr/local/Kafka~
+
+Step 2 :-  root@one:/home/one/Downloads# tar xvzf kafka_2.11-1.0.0.tgz 
+
+Step 3 :-  root@one:/home/one/Downloads/kafka_2.11-1.0.0# sudo mv * /usr/local/Kafka/
+
+Starting Kafka server
+
+Step 4 :-  root@one:~# sudo /usr/local/Kafka/bin/kafka-server-start.sh /usr/local/Kafka/config/server.properties 
+
+Testing Kafka Server
+
+Now, it is time to verify the Kafka server is operating correctly.
+
+To test Kafka, create a sample topic with name "testing" in Apache Kafka using the following command:
+
+Step 5 :- root@one:~#sudo /usr/local/Kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1  --partitions 1 --topic testing
+
+You should see the following output:
+
+Created topic "testing".
+
+Now, ask Zookeeper to list available topics on Apache Kafka by running the following command:
+
+Step 6 :- root@one:~#sudo /usr/local/Kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+You should see the following output:
+
+testing
+
+Now, publish a sample messages to Apache Kafka topic called testing by using the following producer command:
+
+Step 7 :- root@one:~#sudo /usr/local/Kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic testing
+
+After running above command, enter some messages like 
+"Hi how are you?" press enter, 
+then enter another message like 
+"How is your job?"
+
+Now, use consumer command to check for messages on Apache Kafka Topic called testing by running the following command:
+
+Step 8 :- root@one:~#sudo /usr/local/Kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic testing --from-beginning
+
+You should see the following output:
+
+Hi how are you?
+Where are you?
+
+With this above testing you have successfully verified that you have a valid Apache Kafka setup with Apache Zookeeper.
+
+
+Step 8 :- root@one:~# sudo /usr/local/Kafka/bin/kafka-server-stop.sh config/server.properties
+
+
+
+
