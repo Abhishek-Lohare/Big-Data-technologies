@@ -1,0 +1,49 @@
+$ mysql -u root -p
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "select * from student";
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "create table employee(id int, name varchar(50), salary int)";
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into employee values (101,'Sagar',90000)";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into employee values (102,'Vishal',70000)";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into employee values (103,'Mohit',60000)";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "select * from employee where salary>=70000";
+
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --query "select * from employee where salary>=70000 and \$CONDITIONS" --target-dir '/Import9query' -m 1;
+$ hdfs dfs -cat /Import9query/part-m-00000
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "create table dept(did int, eid int, dname varchar(50), dloc varchar(20))";
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into dept values (01, 101, 'IT', 'Gurugram')";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into dept values (01, 102, 'IT', 'Mumbai')";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into dept values (02, 103, 'HR', 'Pune')";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into dept values (03, 104, 'Sales', 'Pune')";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "insert into dept values (03, 105, 'Sales', 'Delhi')";
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "select * from dept";
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "select * from dept join employee on dept.eid=employee.id";
+	
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --query "select * from dept join employee on dept.eid=employee.id where employee.salary>=70000 and \$CONDITIONS" --target-dir '/Import10query' -m 1;
+$ hdfs dfs -cat /Import10query/part-m-00000
+
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --query "select * from dept join employee on dept.eid=employee.id where employee.salary>=70000 and \$CONDITIONS" --fields-terminated-by '|' --target-dir '/Import10query1' -m 1;
+$ hdfs dfs -cat /Import10query1/part-m-00000
+
+# Below command is used to store file in encrypted format
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table employee -m 1 --fields-terminated-by '|' --where 'salary>65000' --target-dir '/Import10query2/' --as-sequencefile;
+
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --username root --password password --query 'select * from employee where salary>65000 and $CONDITIONS' --split-by employee.id --target-dir '/splitby1'
+$ hdfs dfs -ls /splitby1/
+
+# We need to give more than 1 mapper for splitting
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --username root --password password --query 'select * from employee where salary>65000 and $CONDITIONS' --split-by employee.id --target-dir '/splitby1' -m 2
+
+# Use -P instead of typing password in the query
+$ sqoop list-databases --connect jdbc:mysql://localhost/mydb3 --username root -P
+
+# Practice on Customers dataset
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "create table orders (order_id int, order_date varchar(50), order_customer_id int, order_status varchar(50))";
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "load data local infile '/media/sf_MyWork/orders.csv' into table orders columns terminated by ','";
+
+$ sqoop eval --connect jdbc:mysql://localhost/mydb3 --query "select c.customer_fname, c.customer_lname, count(o.order_id) OrdersCount from customers c join orders o on o.order_customer_id=c.customer_id group by c.customer_fname, c.customer_lname having OrdersCount>5";

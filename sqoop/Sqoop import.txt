@@ -1,0 +1,63 @@
+$ mysql -u root -p
+# Enter "password" as password
+
+> show databases;
+> create database mydb3;
+> use mydb3;
+> create table student (roll_no int primary key, stud_name varchar(30), stud_marks int);
+> insert into student values (101, "sagar", 90);
+> insert into student values (102, "vishal", 80);
+> insert into student values (103, "mohit", 85);
+> insert into student values (104, "nikhil", 70);
+> insert into student values (105, "jay", 75);
+> select * from student;
+
+# Granting privileges to access database
+> grant all privileges on mydb3.* to '%'@'localhost';
+> grant all privileges on mydb3.* to ''@'localhost';
+
+#----------------------------------------------Sqoop Script ---------------------------------------#
+
+# Importing data from mysql to hdfs (It will create as many files as there are records in the table)
+
+# Use below command incase student dir is alredy available
+$ hdfs dfs -rm -r /user/admin/student
+
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table student;
+$ hdfs dfs -ls /user/admin1/student/
+$ hdfs dfs -cat /user/admin1/student/part-m-00000
+
+# This will merge all records in a single file only 
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table student -m 1 --target-dir '/MyImport1/';
+$ hdfs dfs -cat /MyImport1/part-m-00000
+
+# To use '|' as a seperater instead of ',' use below command
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table student -m 1 --fields-terminated-by '|' --target-dir '/MyImport2/';
+$ hdfs dfs -cat /MyImport2/part-m-00000
+
+# To store records on some condition use '--where'
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table student -m 1 --fields-terminated-by '|' --where 'stud_marks>80' --target-dir '/MyImport4/';
+$ hdfs dfs -cat /MyImport4/part-m-00000
+
+# To select only few columns instead of selecting all of them
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table student -m 1 --fields-terminated-by '|' --columns 'roll_no,stud_name' --where 'stud_marks>80' --target-dir '/MyImport5/';
+$ hdfs dfs -cat /MyImport5/part-m-00000
+
+# To list databases
+$ sqoop list-databases --connect jdbc:mysql://localhost/ 
+
+# To list tables in a specific database
+$ sqoop list-tables --connect jdbc:mysql://localhost/mydb3
+
+# Practice on customers dataset
+> create table customers(customer_id int, customer_fname varchar(30), customer_lname varchar(30), customer_email varchar(50), customer_password varchar(30), customer_street varchar(30), customer_city varchar(30), customer_state varchar(30), customer_zipcode varchar(30));
+> load data local infile '/media/sf_MyWork/customers.csv' into table customers columns terminated by ',';
+> select * from customers;
+
+# Q1- Store all those customers' records who belong to Texas i.e. state=TX
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table customers -m 1 --fields-terminated-by '|' --where 'customer_state = "TX"' --target-dir '/MyImport6/';
+$ hdfs dfs -cat /MyImport6/part-m-00000
+
+# Q2- Store id, fname and lname only for those customers whose state=TX and fname starts with 'M'
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --table customers -m 1 --fields-terminated-by '|' --columns 'customer_id,customer_fname,customer_lname' --where 'customer_state = "TX" and customer_fname like "M%"' --target-dir '/MyImport7/';
+$ hdfs dfs -cat /MyImport7/part-m-00000

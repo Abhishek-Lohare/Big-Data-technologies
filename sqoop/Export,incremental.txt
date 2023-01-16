@@ -1,0 +1,47 @@
+#--------------------------------------------- INCREMENTAL LOAD ---------------------------------------------#
+
+$ mysql -u root -p
+
+> create table emp1(emp_id int not null auto_increment, emp_name varchar(100),emp_sal int, primary key(emp_id));
+
+> insert into emp1 values (1,"sagar", 90000), (2,"Vishal",80000), (3,"mohit",85000);
+
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --username root --password password --table emp1 --m 1 --target-dir '/Incremental3/'
+
+> insert into emp1 values (4,"ajit",50000), (5,"jay", 60000), (6, "nikhil", 65000);
+
+# Below command will insert data into hdfs dir with new records only thus saving the computation timed
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --username root --password password --table emp1 --m 1 --target-dir '/Incremental3/' --incremental append --check-column emp_id --last-value 3
+
+Use below command to save data in hive using sql table's data
+hive > create external table emp1(emp_id int,emp_name string,emp_sal int) row format delimited fields terminated by ',' location '/Incremental3';
+
+mysql > alter table emp1 add crettimestamp timestamp default now() on update now();
+mysql > insert into emp1 values (7,"Swapnil",45000,null);
+
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --username root --password password --table emp1 -m 1 --incremental lastmodified --merge-key emp_id --check-column crettimestamp --last-value "2022-12-07 00:00:00" --target-dir '/Incremental3';
+
+# Exporting data from HDFS to MYSQL #
+
+# first create a schema in mysql where you want to put the data
+> create table emp3 (id int, name varchar(20),salary int);
+
+# Then import the data in hdfs which you will put in new table(emp3)
+$ sqoop import --connect jdbc:mysql://localhost/mydb3 --username root --password password --table employee --m 1 --target-dir '/Incremental4/'
+
+$ hdfs dfs -cat /Incremental4/part-m-00000
+
+$ sqoop export --connect jdbc:mysql://localhost/mydb3 --table emp3 --export-dir '/Incremental4/part-m-00000' --fields-terminated-by ',';
+
+> select * from emp3;
+
+#-------------------------------------------- Creating job in sqoop -----------------------------------------#
+
+$ sqoop job --list
+
+$ sqoop job --create mysqoopjob1 -- import --connect jdbc:mysql://localhost/mydb3 --table student -m 1 --fields-terminated-by '|' --target-dir '/MyImport101/';
+
+$ sqoop job --show mysqoopjob1
+
+$ sqoop job --exec mysqoopjob1
+
